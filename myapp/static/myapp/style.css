@@ -1,0 +1,17 @@
+.hbar1 {
+
+    display: inline;
+    margin: 15px;
+}
+
+body{
+    background-color: darkcyan;
+    text-decoration-color: aqua;
+}
+
+h1{
+    color: black;
+    font-size: 25px;
+    font-style: oblique;
+
+}

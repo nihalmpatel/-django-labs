@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>E-Learning WebApp!</title>
+</head>
+<body>
+<h4>Courses List:</h4>
+<ol>
+    {% for course in courlist %}
+        <li>
+            <a href='{% url "myapp:course_details" course.id %}'>
+                {{ course.name }}
+            </a>
+        </li>
+    {% endfor %}
+</ol>
+
+<p>
+    <a href='{% url "myapp:place_order" %}'> Place Order
+    </a>
+</p>
+</body>
+</html>

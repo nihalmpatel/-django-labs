@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'myapp/style.css' %}" />
+    <title>E-learning WebApp - {% block title %}Welcome!{% endblock %}</title>
+
+</head>
+<body>
+    <div>
+        <h1>{% block myhdg %}Hello {{ name }} !!!!{% endblock %}</h1>
+        {% block body_block %}*** {% endblock %}
+    </div>
+    <hr />
+    <div>
+        <ul>
+            <li class="hbar1"><a href="/myapp/courses">Find out about our E-learning courses</a></li>
+            <li class="hbar1"><a href="/myapp/about/">Find out about our E-learning website</a></li>
+            <li class="hbar1"><a href="{% url 'myapp:index' %}">Click here to return to main page</a><br/> </li>
+        </ul>
+    </div>
+</body>
+</html>
