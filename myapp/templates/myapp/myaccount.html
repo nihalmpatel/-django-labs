@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account</title>
+</head>
+<body>
+{% if message %}
+    <h3> {{ message }} </h3>
+{% endif %}
+
+{% if user_data %}
+    <h2>Name: {{ user_data.fname }} {{ user_data.lname }}</h2>
+    <h3>Interested Topics</h3>
+    {% for top in user_data.topics %}
+
+        <h3>{{ top.name }}</h3>
+        <p>{{ top.category }}</p>
+        <a href="{% url 'myapp:detail' top.id %}">View
+            Courses</a>
+
+    {% endfor %}
+
+    <h3>Orders</h3>
+    {% if user_data.orders %}
+        {% for order in user_data.orders %}
+            <h4>{{ order.order_date|date:"D d M Y" }}</h4>
+            <div>
+                <span> Levels: {{ order.levels }}</span>
+            </div>
+
+            {% for course in order.courses.all %}
+                <p><a href="{% url 'myapp:course_details' course.id %}"
+                      class="link-border">{{ course.name }}</a>
+                    | <span> <i class="fa fa-money"></i>${{ course.price }}</span></p>
+            {% endfor %}
+
+        {% endfor %}
+    {% endif %}
+
+{% endif %}
+<a href="{% url 'myapp:logout' %}" class="link-border">Logout</a>
+</body>
+</html>

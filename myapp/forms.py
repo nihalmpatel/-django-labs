@@ -1,5 +1,5 @@
 from django import forms
-from myapp.models import Order
+from myapp.models import Order, Student
 
 
 class OrderForm(forms.ModelForm):
@@ -24,3 +24,11 @@ class InterestForm(forms.Form):
                 widget=forms.RadioSelect)
     levels = forms.IntegerField(min_value=1, initial=1)
     comments = forms.CharField(widget=forms.Textarea,required=False,label="Additional Comments")
+
+class LoginForm(forms.Form):
+    username=forms.CharField(widget=forms.TextInput)
+    password= forms.CharField(widget=forms.TextInput)
+
+    class Meta:
+        model = Student
+        fields = ( 'username','password')

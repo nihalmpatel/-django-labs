@@ -1,6 +1,14 @@
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Topic, Course
-from .forms import OrderForm, InterestForm
+from django.urls import reverse
+from django.contrib.auth.models import User
+
+from .models import Topic, Course, Student, Order
+from .forms import OrderForm, InterestForm, LoginForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+
 
 # Create your views here.
 
@@ -21,10 +29,12 @@ def detail(request, top_no):
 
     return render(request, 'myapp/detail0.html', {'topic': topic, 'courses': courses})
 
+
 def courses(request):
     courlist = Course.objects.all().order_by('id')
     print(courlist)
     return render(request, 'myapp/courses.html', {'courlist': courlist})
+
 
 def place_order(request):
     msg = ''
@@ -49,21 +59,73 @@ def place_order(request):
 
 
 def course_details(request, course_id):
-   try:
-       detail = Course.objects.get(pk=course_id)
-       if detail:
+    try:
+        detail = Course.objects.get(pk=course_id)
+        if detail:
             if request.method == 'POST':
                 form = InterestForm(request.POST)
                 if form.is_valid():
                     interestCourse = form.cleaned_data
                     if interestCourse['interested'] == '1':
-                        detail.interested = detail.interested+1
+                        detail.interested = detail.interested + 1
                         detail.save()
                     return redirect('myapp:index')
             else:
-                interestForm= InterestForm()
+                interestForm = InterestForm()
                 return render(request, 'myapp/course_details.html', {'interestForm': interestForm, 'detail': detail})
-       else:
+        else:
             return redirect('myapp:courses')
-   except Course.DoesNotExist:
-       return redirect('myapp:courses')
+    except Course.DoesNotExist:
+        return redirect('myapp:courses')
+
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            usr = form.cleaned_data
+        username = usr['username']
+        password = usr['password']
+        u = User.objects.get(username=username)
+        user = None
+        if password == u.password:
+            user = u
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                print("login")
+                return HttpResponseRedirect(reverse('myapp:myaccount'))
+            else:
+                print("account disable")
+                return HttpResponse('Your account is disabled.')
+        else:
+            print("login invalid")
+            return HttpResponse('Invalid login details.')
+    else:
+        loginForm = LoginForm()
+        return render(request, 'myapp/login.html', {'loginForm': loginForm})
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse(('myapp:index')))
+
+@login_required
+def myaccount(request):
+    data = {}
+    message = ''
+    print(request.user.pk)
+    if request.user.is_staff:
+        message = 'You are not Registered Student'
+    else:
+        data['fname'] = request.user.first_name
+        data['lname'] = request.user.last_name
+        studentTopics = Student.objects.get(pk=request.user.pk)
+        print(studentTopics)
+        data['topics'] = studentTopics.interested_in.all()
+        data['orders'] = studentOrders = Order.objects.filter(student__id=request.user.pk)
+        if studentOrders:
+            data['courses'] = [order.courses.all() for order in studentOrders]
+    return render(request, 'myapp/myaccount.html', {'user_data': data, 'message': message})

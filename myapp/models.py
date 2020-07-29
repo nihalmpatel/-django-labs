@@ -2,7 +2,6 @@ from django.db import models
 import datetime
 from django.contrib.auth.models import User
 import decimal
-from django.forms import ModelForm
 
 
 class Topic(models.Model):
@@ -30,7 +29,7 @@ class Course(models.Model):
         self.save()
 
 
-class Student(User):
+class Student(User,models.Model):
     CITY_CHOICES = [('WS', 'Windsor'), ('CG', 'Calgery'), ('MR', 'Montreal'), ('VC', 'Vancouver')]
     school = models.CharField(max_length=50, null=True, blank=True)
     address = models.CharField(max_length=100, blank=True)
