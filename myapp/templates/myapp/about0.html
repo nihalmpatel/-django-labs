@@ -10,6 +10,8 @@
 {% csrf_token %}
 <h1>This is an E-Learning website!
     Search our topics to find all available courses</h1>
+
+    <h3> Total views: {{ request.session.about_visits }} </h3>
 {% endblock %}
 </body>
 </html>

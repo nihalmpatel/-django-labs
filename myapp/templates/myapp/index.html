@@ -8,6 +8,12 @@
     {% extends 'myapp/base.html' %}
 
     {% block body_block %}
+        {% if request.session.last_login %}
+            <span class="alert alert-info">Last Login: {{ request.session.last_login }}</span>
+        {% else %}
+             <span class="alert alert-warning">Your last login was more than one hour ago</span>
+        {% endif %}
+
         {% if top_list %}
         <h2>List of Topics</h2>
         <ol>

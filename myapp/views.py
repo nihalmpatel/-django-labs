@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -20,7 +22,16 @@ def index(request):
 
 
 def about(request):
-    return render(request, "myapp/about0.html")
+    views = 0
+    if 'about_visits' in request.session:
+        views = int(request.session.get('about_visits')) + 1
+        request.session['about_visits'] = views
+        print('Increasing visit..')
+    else:
+        request.session.__setitem__('about_visits', 1)
+        request.session.set_expiry(300)
+        print('Creating about_visit cookie..')
+    return render(request, "myapp/about0.html", {'visits': views})
 
 
 def detail(request, top_no):
@@ -93,8 +104,15 @@ def user_login(request):
 
         if user:
             if user.is_active:
+                if request.session.test_cookie_worked():
+                    print('Woohoo! Test Cookie Worked')
+                    request.session.delete_test_cookie()
+                    request.session['last_login'] = datetime.now().timestamp()
+                    settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+                else:
+                    print('Test Cookie did not work')
+
                 login(request, user)
-                print("login")
                 return HttpResponseRedirect(reverse('myapp:myaccount'))
             else:
                 print("account disable")
@@ -104,11 +122,14 @@ def user_login(request):
             return HttpResponse('Invalid login details.')
     else:
         loginForm = LoginForm()
+        print('Setting up a Test Cookie')
+        request.session.set_test_cookie()
         return render(request, 'myapp/login.html', {'loginForm': loginForm})
 
 
 @login_required
 def user_logout(request):
+    request.session.flush()
     logout(request)
     return HttpResponseRedirect(reverse(('myapp:index')))
 
