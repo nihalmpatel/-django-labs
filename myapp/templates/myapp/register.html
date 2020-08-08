@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+{% if msg %}
+    <h2>{{ msg }}</h2>
+    <a href='{% url "myapp:login" %}'>Login Here</a>
+{% else %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ registerForm.as_ul }}
+        <button type="submit">Submit</button>
+    </form>
+{% endif %}
+
+</body>
+</html>

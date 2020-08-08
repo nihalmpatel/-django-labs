@@ -4,14 +4,20 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-
+import random
+import string
 from .models import Topic, Course, Student, Order
-from .forms import OrderForm, InterestForm, LoginForm
+from .forms import OrderForm, InterestForm, LoginForm, RegisterForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
 
 
+def get_random_password_string(length=8):
+    password_characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(password_characters) for i in range(length))
+    return password
 # Create your views here.
 
 def index(request):
@@ -133,7 +139,7 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse(('myapp:index')))
 
-@login_required
+@login_required(login_url = '/myapp/login')
 def myaccount(request):
     data = {}
     message = ''
@@ -150,3 +156,37 @@ def myaccount(request):
         if studentOrders:
             data['courses'] = [order.courses.all() for order in studentOrders]
     return render(request, 'myapp/myaccount.html', {'user_data': data, 'message': message})
+
+
+def register(request):
+    msg = ''
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            student = form.save(commit=False)
+            student.save()
+            form.save_m2m()
+            msg = 'You have been registered successfully'
+        else:
+            msg = 'Something went wrong'
+        return render(request, 'myapp/register.html', {'msg': msg})
+    else:
+        form = RegisterForm()
+        return render(request, 'myapp/register.html', {'registerForm': form, 'msg': msg})
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email=request.POST['email']
+        new_pwd=get_random_password_string()
+        Student.objects.filter(email=email).update(password=new_pwd)
+        send_mail(
+            'Forgot Password',
+            'Here is the new Password: '+new_pwd,
+            'pattie.sipes83@ethereal.email',
+            [email],
+            fail_silently=False,
+        )
+        print(email,new_pwd)
+    return render(request, 'myapp/forgot_password.html')
+
+

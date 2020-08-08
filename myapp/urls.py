@@ -8,9 +8,11 @@ urlpatterns = [
     path(r'about', views.about, name='about'),
     path(r'courses', views.courses, name='courses'),
     path(r'login', views.user_login, name='login'),
+    path(r'register', views.register, name='register'),
     path(r'logout', views.user_logout, name='logout'),
     path(r'myaccount', views.myaccount, name='myaccount'),
     path(r'place_order', views.place_order, name='place_order'),
     path(r'courses/<int:course_id>', views.course_details, name='course_details'),
     path(r'<int:top_no>', views.detail, name='detail'),
+    path(r'forgot_password', views.forgot_password, name='forgot_password'),
 ]

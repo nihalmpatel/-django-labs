@@ -17,18 +17,27 @@ class OrderForm(forms.ModelForm):
                 print("success")
                 raise forms.ValidationError('You exceeded the number of levels for this course.')
 
+
 class InterestForm(forms.Form):
     CHOICES = [('1', 'Yes'), ('2', 'No')]
     interested = forms.ChoiceField(
-                choices=CHOICES,
-                widget=forms.RadioSelect)
+        choices=CHOICES,
+        widget=forms.RadioSelect)
     levels = forms.IntegerField(min_value=1, initial=1)
-    comments = forms.CharField(widget=forms.Textarea,required=False,label="Additional Comments")
+    comments = forms.CharField(widget=forms.Textarea, required=False, label="Additional Comments")
+
 
 class LoginForm(forms.Form):
-    username=forms.CharField(widget=forms.TextInput)
-    password= forms.CharField(widget=forms.TextInput)
+    username = forms.CharField(widget=forms.TextInput)
+    password = forms.CharField(widget=forms.TextInput)
 
     class Meta:
         model = Student
-        fields = ( 'username','password')
+        fields = ('username', 'password')
+
+
+class RegisterForm(forms.ModelForm):
+
+    class Meta:
+        model = Student
+        fields = ('username', 'password', 'first_name', 'last_name', 'city', 'interested_in')
