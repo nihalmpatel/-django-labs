@@ -10,6 +10,7 @@
 {% endif %}
 
 {% if user_data %}
+    <img src="{{ avatar.url }}"  alt="profile image" height="100px">
     <h2>Name: {{ user_data.fname }} {{ user_data.lname }}</h2>
     <h3>Interested Topics</h3>
     {% for top in user_data.topics %}

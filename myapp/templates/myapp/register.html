@@ -9,7 +9,7 @@
     <h2>{{ msg }}</h2>
     <a href='{% url "myapp:login" %}'>Login Here</a>
 {% else %}
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ registerForm.as_ul }}
         <button type="submit">Submit</button>

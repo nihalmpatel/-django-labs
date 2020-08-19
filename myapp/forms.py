@@ -37,7 +37,6 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.ModelForm):
-
     class Meta:
         model = Student
-        fields = ('username', 'password', 'first_name', 'last_name', 'city', 'interested_in')
+        fields = ('username', 'password', 'first_name', 'last_name', 'city', 'interested_in', 'avatar')

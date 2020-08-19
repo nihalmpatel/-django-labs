@@ -150,18 +150,18 @@ def myaccount(request):
         data['fname'] = request.user.first_name
         data['lname'] = request.user.last_name
         studentTopics = Student.objects.get(pk=request.user.pk)
-        print(studentTopics)
+        student = Student.objects.get(pk=request.user.pk)
         data['topics'] = studentTopics.interested_in.all()
         data['orders'] = studentOrders = Order.objects.filter(student__id=request.user.pk)
         if studentOrders:
             data['courses'] = [order.courses.all() for order in studentOrders]
-    return render(request, 'myapp/myaccount.html', {'user_data': data, 'message': message})
+    return render(request, 'myapp/myaccount.html', {'user_data': data, 'message': message, 'avatar': student.avatar})
 
 
 def register(request):
     msg = ''
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
             student = form.save(commit=False)
             student.save()
