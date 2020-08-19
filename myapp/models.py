@@ -2,6 +2,15 @@ from django.db import models
 import datetime
 from django.contrib.auth.models import User
 import decimal
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+def validate_price(value):
+    if value < 100 or value > 200:
+        raise ValidationError(
+            _('%(value)s is not in the range of 100-200.'),
+            params={'value': value},
+        )
 
 
 class Topic(models.Model):
@@ -15,7 +24,7 @@ class Topic(models.Model):
 class Course(models.Model):
     topic = models.ForeignKey(Topic, related_name='courses', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[validate_price])
     hours = models.DecimalField(max_digits=3, decimal_places=0,default=0)
     for_everyone = models.BooleanField(default=True)
     description = models.TextField(max_length=300, null=True, blank=True)
